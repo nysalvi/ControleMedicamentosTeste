@@ -100,19 +100,19 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 R.[FUNCIONARIO_ID],
                 
                 R.[PACIENTE_ID],
-               
-                F.[NOME],
+                
+                F.[NOME] AS FUNCIONARIO_NOME,
                 F.[LOGIN],
                 F.[SENHA],
 
-                P.[NOME],
+                P.[NOME] AS PACIENTE_NOME,
                 P.[CARTAOSUS],
 
                 R.[QUANTIDADEMEDICAMENTO],
                 R.[DATA]
             FROM
                 TBRequisicao AS R INNER JOIN 
-                TBPaciente AS P ON R.[ID] = P.[ID]
+                TBPaciente AS P ON R.[PACIENTE_ID] = P.[ID]
                 INNER JOIN TBFuncionario ON
                 R.[FUNCIONARIO_ID] = F.[ID]";
 
@@ -123,18 +123,18 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 
                 R.[PACIENTE_ID],
                
-                F.[NOME],
+                F.[NOME] AS FUNCIONARIO_NOME,
                 F.[LOGIN],
                 F.[SENHA],
 
-                P.[NOME],
+                P.[NOME] AS PACIENTE_NOME,
                 P.[CARTAOSUS],
 
                 R.[QUANTIDADEMEDICAMENTO],
                 R.[DATA]
             FROM
                 TBRequisicao AS R INNER JOIN 
-                TBPaciente AS P ON R.[ID] = P.[ID]
+                TBPaciente AS P ON R.[PACIENTE_ID] = P.[ID]
                 INNER JOIN TBFuncionario ON
                 R.[FUNCIONARIO_ID] = F.[ID]                                             
             WHERE
@@ -215,7 +215,8 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 List<Requisicao> requisicoes = new List<Requisicao>();
                 while (sqlDataReaderRequisicao.Read())
                 {
-
+                    Requisicao requisicao = null;
+                    requisicao = ConfigurarRequisicao(requisicao, sq);
                 }
             }
             
@@ -244,7 +245,42 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
 
             return medicamento;
         }
-        
+        public static Requisicao ConverterRequisicao(SqlDataReader leitorMedicamento)
+        {
+            int numero = Convert.ToInt32(leitorMedicamento["ID"]);
+
+            int funcionarioID= Convert.ToInt32(leitorMedicamento["FUNCIONARIO_ID"]);
+            string funcionarioNome = Convert.ToString(leitorMedicamento["FUNCIONARIO_NOME"]);
+            string funcionarioLogin = Convert.ToString(leitorMedicamento["LOGIN"]);
+            string funcionarioSenha = Convert.ToString(leitorMedicamento["SENHA"]);
+
+            int pacienteID = Convert.ToInt32(leitorMedicamento["PACIENTE_ID"]);
+            string pacienteNome = Convert.ToString(leitorMedicamento["PACIENTE_NOME"]);
+            string pacienteSUS = Convert.ToString(leitorMedicamento["PACIENTE_SUS"]);
+
+            string lote = Convert.ToString(leitorMedicamento["MEDICAMENTO_ID"]);
+            DateTime data = Convert.ToDateTime(leitorMedicamento["VALIDADE"]);
+            int quantidadeMedicamento = Convert.ToInt32
+                                            (leitorMedicamento["QUANTIDADEMEDICAMENTO"]);
+            var requisicao = new Requisicao
+            {
+                Numero = numero,
+                Funcionario = new Funcionario
+                            (funcionarioNome, funcionarioLogin, funcionarioSenha)
+                {
+                    Numero = funcionarioID
+                },
+
+                Paciente = new Paciente(pacienteNome, pacienteSUS)
+                {
+                    Numero = pacienteID
+                },
+                QtdMedicamento = quantidadeMedicamento,
+                Data = data                
+            };
+
+            return requisicao;
+        }
         public static void ConfigurarMedicamento
             (Medicamento medicamento, SqlCommand sqlCommand)
         {
@@ -257,6 +293,16 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 ("QUANTIDADEDISPONIVEL", medicamento.QuantidadeDisponivel);
             sqlCommand.Parameters.AddWithValue
                 ("FORNECEDOR_ID", medicamento.Fornecedor.Numero);
+        }
+        public static void ConfigurarRequisicao
+        (Requisicao requisicao, SqlCommand sqlCommand)
+        {
+            sqlCommand.Parameters.AddWithValue("ID", requisicao.Numero);            
+            sqlCommand.Parameters.AddWithValue("FUNCIONARIO_ID", requisicao.Funcionario.Numero);
+            sqlCommand.Parameters.AddWithValue("PACIENTE_ID", requisicao.Paciente.Numero);
+            sqlCommand.Parameters.AddWithValue("MEDICAMENTO_ID", requisicao.Medicamento.Numero);
+            sqlCommand.Parameters.AddWithValue("QUANTIDADEMEDICAMENTO", requisicao.QtdMedicamento);
+            sqlCommand.Parameters.AddWithValue("DATA", requisicao.Data);
         }
     }
 }
