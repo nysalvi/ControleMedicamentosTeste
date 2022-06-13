@@ -138,7 +138,7 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 INNER JOIN TBFuncionario ON
                 R.[FUNCIONARIO_ID] = F.[ID]                                             
             WHERE
-                R.[MEDICAMENTO_ID] = [MED_ID]";
+                R.[MEDICAMENTO_ID] = @MED_ID";
         #endregion
 
         public void Inserir(Medicamento medicamento)
@@ -216,12 +216,12 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 while (sqlDataReaderRequisicao.Read())
                 {
                     Requisicao requisicao = null;
-                    requisicao = ConfigurarRequisicao(requisicao, sq);
+                    requisicao = ConverterRequisicao(sqlDataReaderRequisicao);
+                    requisicao.Medicamento = medicamento;
+                    requisicoes.Add(requisicao);
                 }
-            }
-            
-
-
+                medicamento.Requisicoes = requisicoes;
+            }            
             sqlConnection.Close();
 
             return medicamento;
@@ -245,23 +245,23 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
 
             return medicamento;
         }
-        public static Requisicao ConverterRequisicao(SqlDataReader leitorMedicamento)
+        public static Requisicao ConverterRequisicao(SqlDataReader leitorRequisicao)
         {
-            int numero = Convert.ToInt32(leitorMedicamento["ID"]);
+            int numero = Convert.ToInt32(leitorRequisicao["ID"]);
 
-            int funcionarioID= Convert.ToInt32(leitorMedicamento["FUNCIONARIO_ID"]);
-            string funcionarioNome = Convert.ToString(leitorMedicamento["FUNCIONARIO_NOME"]);
-            string funcionarioLogin = Convert.ToString(leitorMedicamento["LOGIN"]);
-            string funcionarioSenha = Convert.ToString(leitorMedicamento["SENHA"]);
+            int funcionarioID = Convert.ToInt32(leitorRequisicao["FUNCIONARIO_ID"]);
 
-            int pacienteID = Convert.ToInt32(leitorMedicamento["PACIENTE_ID"]);
-            string pacienteNome = Convert.ToString(leitorMedicamento["PACIENTE_NOME"]);
-            string pacienteSUS = Convert.ToString(leitorMedicamento["PACIENTE_SUS"]);
+            string funcionarioNome = Convert.ToString(leitorRequisicao["FUNCIONARIO_NOME"]);
+            string funcionarioLogin = Convert.ToString(leitorRequisicao["LOGIN"]);
+            string funcionarioSenha = Convert.ToString(leitorRequisicao["SENHA"]);
 
-            string lote = Convert.ToString(leitorMedicamento["MEDICAMENTO_ID"]);
-            DateTime data = Convert.ToDateTime(leitorMedicamento["VALIDADE"]);
+            int pacienteID = Convert.ToInt32(leitorRequisicao["PACIENTE_ID"]);
+            string pacienteNome = Convert.ToString(leitorRequisicao["PACIENTE_NOME"]);
+            string pacienteSUS = Convert.ToString(leitorRequisicao["PACIENTE_SUS"]);
+            
+            DateTime data = Convert.ToDateTime(leitorRequisicao["DATA"]);
             int quantidadeMedicamento = Convert.ToInt32
-                                            (leitorMedicamento["QUANTIDADEMEDICAMENTO"]);
+                                            (leitorRequisicao["QUANTIDADEMEDICAMENTO"]);
             var requisicao = new Requisicao
             {
                 Numero = numero,
