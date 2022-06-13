@@ -48,7 +48,9 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
 			        [ID] = @ID";
 
         private const string sqlExcluir =
-           @"DELETE FROM [TBRequisicao]
+           @"UPDATE FROM [TBRequisicao]
+                SET
+                    [QUANTIDADEMEDICAMENTO] = @QUANTIDADEMEDICAMENTO,
 		        WHERE
 			        [ID] = @ID";
         private const string sqlSelecionarPorNumero =
@@ -58,9 +60,28 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [TELEFONE],
                     [EMAIL],
                     [CIDADE],
-                    [ESTADO]
+                    [ESTADO],
+
+                    [P.NOME] AS P.NOME,
+                    [P.CARTAOSUS] AS P.CARTAOSUS,
+
+                    [F.NOME] AS F.NOME,
+                    [F.LOGIN] AS F.LOGIN,
+                    [F.SENHA] AS F.SENHA,
+
+                    [M.NOME] AS M.NOME,
+                    [M.DESCRICAO] AS M.DESCRICAO,
+                    [M.LOTE] AS M.LOTE,
+                    [M.VALIDADE] AS M.VALIDADE,
+                                        
               FROM 
-	                [TBRequisicao]
+	                TBRequisicao AS R INNER JOIN
+                    TBPaciente AS P ON 
+                    R.[PACIENTE_ID] = P.[ID] INNER JOIN
+                    TBFuncionario AS F ON R.[FUNCIONARIO_ID] = F.[ID]
+                    INNER JOIN TBMedicamento AS M ON
+                    R.[ID] = M.[ID]
+    
               WHERE 
 	                [ID] = @ID";
 
@@ -104,7 +125,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
             SqlCommand sqlCommand = new SqlCommand(sqlExcluir, sqlConnection);
 
             sqlCommand.Parameters.AddWithValue("ID", requisicao.Numero);
-
+            sqlCommand.Parameters.AddWithValue("QUANTIDADEMEDICAMENTO", 0);
             sqlConnection.Open();
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
@@ -146,6 +167,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
 
             return requisicao;
         }
+
         public static Requisicao ConverterRequisicao(SqlDataReader leitorRequisicao)
         {
             int numero = Convert.ToInt32(leitorRequisicao["ID"]);

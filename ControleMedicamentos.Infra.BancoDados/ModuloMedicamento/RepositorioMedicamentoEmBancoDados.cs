@@ -1,5 +1,8 @@
 ﻿using ControleMedicamentos.Dominio.ModuloFuncionario;
+using ControleMedicamentos.Dominio.ModuloFornecedor;
+using ControleMedicamentos.Dominio.ModuloPaciente;
 using ControleMedicamentos.Dominio.ModuloMedicamento;
+using ControleMedicamentos.Dominio.ModuloRequisicao;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -62,8 +65,14 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                     [VALIDADE],
                     [QUANTIDADEDISPONIVEL],
                     [FORNECEDOR_ID]
+                    [F.NOME] AS FORNECEDOR_NOME,
+                    [F.TELEFONE],
+                    [F.EMAIL], 
+                    [F.CIDADE],
+                    [F.ESTADO]
               FROM 
-	                [TBMedicamento]
+	                TBMedicamento AS M INNER JOIN TBFornecedor AS F
+                    ON M.[FORNECEDOR_ID] = F.[ID]
               WHERE 
 	                [ID] = @ID";
 
@@ -75,9 +84,61 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                     [LOTE],
                     [VALIDADE],
                     [QUANTIDADEDISPONIVEL],
-                    [FORNECEDOR_ID]
+                    [FORNECEDOR_ID],
+                    [F.NOME] AS FORNECEDOR_NOME,
+                    [F.TELEFONE],
+                    [F.EMAIL], 
+                    [F.CIDADE],
+                    [F.ESTADO]
               FROM 
-	                [TBMedicamento]";
+	                [TBMedicamento] AS M INNER JOIN ON 
+                    [TBFORNECEDOR] AS F ON M.[FORNECEDOR_ID] = F.[ID]";
+
+        private const string sqlSelecionarRequisicaoTodos =
+            @"SELECT                
+                R.[ID],
+                R.[FUNCIONARIO_ID],
+                
+                R.[PACIENTE_ID],
+               
+                F.[NOME],
+                F.[LOGIN],
+                F.[SENHA],
+
+                P.[NOME],
+                P.[CARTAOSUS],
+
+                R.[QUANTIDADEMEDICAMENTO],
+                R.[DATA]
+            FROM
+                TBRequisicao AS R INNER JOIN 
+                TBPaciente AS P ON R.[ID] = P.[ID]
+                INNER JOIN TBFuncionario ON
+                R.[FUNCIONARIO_ID] = F.[ID]";
+
+        private const string sqlSelecionarRequisicaoPorNumero =
+        @"SELECT                
+                R.[ID],
+                R.[FUNCIONARIO_ID],
+                
+                R.[PACIENTE_ID],
+               
+                F.[NOME],
+                F.[LOGIN],
+                F.[SENHA],
+
+                P.[NOME],
+                P.[CARTAOSUS],
+
+                R.[QUANTIDADEMEDICAMENTO],
+                R.[DATA]
+            FROM
+                TBRequisicao AS R INNER JOIN 
+                TBPaciente AS P ON R.[ID] = P.[ID]
+                INNER JOIN TBFuncionario ON
+                R.[FUNCIONARIO_ID] = F.[ID]                                             
+            WHERE
+                R.[MEDICAMENTO_ID] = [MED_ID]";
         #endregion
 
         public void Inserir(Medicamento medicamento)
@@ -145,7 +206,20 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             Medicamento medicamento = null;
 
             if (sqlDataReader.Read())
+            {
                 medicamento = ConverterMedicamento(sqlDataReader);
+                SqlCommand sqlCommandRequisicao = new SqlCommand
+                    (sqlSelecionarRequisicaoPorNumero, sqlConnection);
+                sqlCommandRequisicao.Parameters.AddWithValue("MED_ID", medicamento.Numero);
+                SqlDataReader sqlDataReaderRequisicao = sqlCommandRequisicao.ExecuteReader();
+                List<Requisicao> requisicoes = new List<Requisicao>();
+                while (sqlDataReaderRequisicao.Read())
+                {
+
+                }
+            }
+            
+
 
             sqlConnection.Close();
 
@@ -161,15 +235,16 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             int quantidadeDisponivel = Convert.ToInt32(leitorMedicamento["QUANTIDADEDISPONIVEL"]);
             int fornecedorId = Convert.ToInt32(leitorMedicamento["FORNECEDOR_ID"]);
 
-            var fornecedor = new Medicamento
+            var medicamento = new Medicamento
                 (nome, descricao, lote, validade)
             {
                 Numero = numero,                
                 QuantidadeDisponivel = quantidadeDisponivel
             };
 
-            return fornecedor;
+            return medicamento;
         }
+        
         public static void ConfigurarMedicamento
             (Medicamento medicamento, SqlCommand sqlCommand)
         {
