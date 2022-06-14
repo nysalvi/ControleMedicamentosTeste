@@ -13,5 +13,12 @@ namespace ControleMedicamentos.Dominio.ModuloRequisicao
         public int QtdMedicamento { get; set; }
         public DateTime Data { get; set; }
         public ModuloFuncionario.Funcionario Funcionario { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format
+            ("\\Medicamento /{0} \\Paciente /{1} |QtdMedicamento /{2}" + "|Data /{3} \\Funcionario /{4}"
+                , Medicamento, Paciente, QtdMedicamento, Data, Funcionario);
+        }
     }
 }

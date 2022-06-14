@@ -17,11 +17,4 @@
     <ProjectReference Include="..\ControleMedicamentos.Dominio\ControleMedicamentos.Dominio.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ModuloFornecedor\" />
-    <Folder Include="ModuloPaciente\" />
-    <Folder Include="ModuloFuncionario\" />
-    <Folder Include="ModuloRequisicao\" />
-  </ItemGroup>
-
 </Project>

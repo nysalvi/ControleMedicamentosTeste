@@ -27,6 +27,15 @@ namespace ControleMedicamentos.Dominio.ModuloMedicamento
             Validade = validade;
             Requisicoes = new List<Requisicao>();
         }
-
+        public override string ToString()
+        {
+            string requString = "";
+            Requisicoes.ForEach(x => requString +=x.ToString());
+            return string.Format("|Nome /{0} |Descrição /{1} |Lote /{2} |Validade /{3}" +
+            "|QtdDisponivel /{4} \\Requisições /{5} \\Fornecedor /{6} |QtdRequisições /{7}",
+            
+            Nome, Descricao, Lote, Validade, QuantidadeDisponivel, requString, 
+                    Fornecedor, QuantidadeRequisicoes);
+        }
     }
 }

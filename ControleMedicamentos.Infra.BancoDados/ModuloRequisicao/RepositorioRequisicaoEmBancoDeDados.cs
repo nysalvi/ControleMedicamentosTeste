@@ -50,7 +50,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
         private const string sqlExcluir =
            @"DELETE FROM [TBRequisicao]                                
 		        WHERE
-			        [ID] = @ID";
+			        [ID] = @ID;";
         private const string sqlSelecionarPorNumero =
            @"SELECT
 	                [ID],

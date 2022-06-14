@@ -17,5 +17,19 @@
         public string Cidade { get; set; }
         public string Estado { get; set; }
 
+        public override bool Equals(object obj)
+        {
+            Fornecedor obj2 = obj as Fornecedor;
+            if (obj2 == null)
+                return false;
+            if (this.ToString() != obj2.ToString())
+                return false;
+            return true;
+        }
+        public override string ToString()
+        {
+            return string.Format("|Nome /{0} |Telefone /{1} |Email /{2} |Estado /{3}",
+                Nome, Telefone, Email, Estado);
+        }
     }
 }

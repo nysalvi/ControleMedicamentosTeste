@@ -11,5 +11,9 @@
         public string Nome { get; set; }
         public string CartaoSUS { get; set; }
 
+        public override string ToString()
+        {
+            return string.Format("|Nome /{0} |CartaoSUS /{1}", Nome, CartaoSUS);
+        }
     }
 }
