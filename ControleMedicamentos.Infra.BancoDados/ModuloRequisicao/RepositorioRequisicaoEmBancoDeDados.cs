@@ -19,7 +19,6 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
         private const string sqlInserir =
            @"INSERT INTO [TBRequisicao] 
                 (
-                    [ID],
                     [FUNCIONARIO_ID],
                     [PACIENTE_ID],
                     [MEDICAMENTO_ID],
@@ -28,7 +27,6 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
 	            )
 	            VALUES
                 (
-                    @ID,
                     @FUNCIONARIO_ID,   
                     @PACIENTE_ID,
                     @MEDICAMENTO_ID,
@@ -60,9 +58,11 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [CIDADE],
                     [ESTADO],
 
+                    [P.ID] AS 
                     [P.NOME] AS P.NOME,
                     [P.CARTAOSUS] AS P.CARTAOSUS,
-
+                    
+                    [F.ID] AS FUNCIONARIO_ID 
                     [F.NOME] AS F.NOME,
                     [F.LOGIN] AS F.LOGIN,
                     [F.SENHA] AS F.SENHA,
@@ -90,9 +90,31 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [TELEFONE],
                     [EMAIL],
                     [CIDADE],
-                    [ESTADO]
+                    [ESTADO],
+
+                    [P.NOME] AS PACIENTE.NOME,
+                    [P.CARTAOSUS] AS PACIENTE.CARTAOSUS,
+
+                    [F.NOME] AS F.NOME,
+                    [F.LOGIN] AS F.LOGIN,
+                    [F.SENHA] AS F.SENHA,
+                    
+                    [M.ID] AS MEDICAMENTO_ID,
+                    [M.NOME] AS MEDICAMENTO.NOME,
+                    [M.DESCRICAO] AS MEDICAMENTO.DESCRICAO,
+                    [M.LOTE] AS MEDICAMENTO.LOTE,
+                    [M.VALIDADE] AS MEDICAMENTO.VALIDADE,
+
               FROM 
-	                [TBRequisicao]";
+	                TBRequisicao AS R INNER JOIN
+                    TBPaciente AS P ON 
+                    R.[PACIENTE_ID] = P.[ID] INNER JOIN
+                    TBFuncionario AS F ON R.[FUNCIONARIO_ID] = F.[ID]
+                    INNER JOIN TBMedicamento AS M ON
+                    R.[ID] = M.[ID]
+    
+              WHERE 
+	                [ID] = @ID";
         #endregion
         public void Inserir(Requisicao requisicao)
         {
