@@ -28,8 +28,8 @@
         }
         public override string ToString()
         {
-            return string.Format("|Nome /{0} |Telefone /{1} |Email /{2} |Estado /{3}",
-                Nome, Telefone, Email, Estado);
+            return string.Format("|Nome /{0} |Telefone /{1} |Email /{2} |Cidade /{3} |Estado /{4}",
+                Nome, Telefone, Email, Cidade, Estado);
         }
     }
 }

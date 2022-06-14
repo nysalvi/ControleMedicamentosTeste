@@ -340,4 +340,4 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             sqlCommand.Parameters.AddWithValue("DATA", requisicao.Data);
         }
     }
-}
+}   
