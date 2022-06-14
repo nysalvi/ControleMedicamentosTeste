@@ -20,7 +20,6 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
         private const string sqlInserir =
            @"INSERT INTO [TBMedicamento] 
                 (
-                    [ID],
                     [NOME],
                     [DESCRICAO],
                     [LOTE],
@@ -30,7 +29,6 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
 	            )
 	            VALUES
                 (
-                    @ID,
                     @NOME,
                     @DESCRICAO,
                     @LOTE,
@@ -42,7 +40,6 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
         private const string sqlEditar =
             @"UPDATE [TBMedicamento]	
 		        SET
-			        [ID] = @ID,
                     [NOME] = @NOME,
                     [DESCRICAO] = @DESCRICAO,
                     [LOTE] = @LOTE,
@@ -196,7 +193,7 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
 
             while (sqlDataReaderRequisicao.Read())
                 todasRequisicoes.Add(ConverterRequisicao(sqlDataReaderRequisicao));
-            todasRequisicoes.OrderBy(x => x.Paciente.Numero);
+            todasRequisicoes.OrderBy(x => x.Medicamento.Numero);
 
             int i = 0;
             while (sqlDataReader.Read())

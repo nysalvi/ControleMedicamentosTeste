@@ -27,6 +27,15 @@ namespace ControleMedicamentos.Dominio.ModuloMedicamento
             Validade = validade;
             Requisicoes = new List<Requisicao>();
         }
+        public override bool Equals(object obj)
+        {
+            Medicamento obj2 = obj as Medicamento;
+            if (obj2 == null)
+                return false;
+            if (this.ToString() != obj2.ToString())
+                return false;
+            return true;
+        }
         public override string ToString()
         {
             string requString = "";

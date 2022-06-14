@@ -1,5 +1,6 @@
 ﻿using ControleMedicamentos.Dominio.ModuloMedicamento;
 using ControleMedicamentos.Dominio.ModuloPaciente;
+using ControleMedicamentos.Dominio.ModuloFuncionario;
 using System;
 using System.Collections.Generic;
 
@@ -12,8 +13,16 @@ namespace ControleMedicamentos.Dominio.ModuloRequisicao
         public Paciente Paciente { get; set; }
         public int QtdMedicamento { get; set; }
         public DateTime Data { get; set; }
-        public ModuloFuncionario.Funcionario Funcionario { get; set; }
-
+        public Funcionario Funcionario { get; set; }
+        public override bool Equals(object obj)
+        {
+            Funcionario obj2 = obj as Funcionario;
+            if (obj2 == null)
+                return false;
+            if (this.ToString() != obj2.ToString())
+                return false;
+            return true;
+        }
         public override string ToString()
         {
             return string.Format
