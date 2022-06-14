@@ -58,19 +58,19 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [CIDADE],
                     [ESTADO],
 
-                    [P.ID] AS 
-                    [P.NOME] AS P.NOME,
-                    [P.CARTAOSUS] AS P.CARTAOSUS,
+                    [P.ID] AS PACIENTE_ID
+                    [P.NOME] AS PACIENTE_NOME,
+                    [P.CARTAOSUS] AS P_CARTAOSUS,
                     
-                    [F.ID] AS FUNCIONARIO_ID 
-                    [F.NOME] AS F.NOME,
-                    [F.LOGIN] AS F.LOGIN,
-                    [F.SENHA] AS F.SENHA,
+                    [F.ID] AS FUNCIONARIO_ID
+                    [F.NOME] AS FUNCIONARIO_NOME,
+                    [F.LOGIN] AS FUNCIONARIO_LOGIN,
+                    [F.SENHA] AS FUNCIONARIO_SENHA,
 
-                    [M.NOME] AS M.NOME,
-                    [M.DESCRICAO] AS M.DESCRICAO,
-                    [M.LOTE] AS M.LOTE,
-                    [M.VALIDADE] AS M.VALIDADE,
+                    [M.NOME] AS MEDICAMENTO_NOME,
+                    [M.DESCRICAO] AS MEDICAMENTO_DESCRICAO,
+                    [M.LOTE] AS MEDICAMENTO_LOTE,
+                    [M.VALIDADE] AS MEDICAMENTO_VALIDADE,
                                         
               FROM 
 	                TBRequisicao AS R INNER JOIN
@@ -92,12 +92,12 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [CIDADE],
                     [ESTADO],
 
-                    [P.NOME] AS PACIENTE.NOME,
-                    [P.CARTAOSUS] AS PACIENTE.CARTAOSUS,
+                    [P.NOME] AS PACIENTE_NOME,
+                    [P.CARTAOSUS] AS PACIENTE_CARTAOSUS,
 
-                    [F.NOME] AS F.NOME,
-                    [F.LOGIN] AS F.LOGIN,
-                    [F.SENHA] AS F.SENHA,
+                    [F.NOME] AS FUNCIONARIO_NOME,
+                    [F.LOGIN] AS FUNCIONARIO_LOGIN,
+                    [F.SENHA] AS FUNCIONARIO_SENHA,
                     
                     [M.ID] AS MEDICAMENTO_ID,
                     [M.NOME] AS MEDICAMENTO.NOME,
@@ -218,7 +218,6 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
             string medicamentoLote = Convert.ToString(leitorRequisicao["MEDICAMENTO_LOTE"]);
             DateTime medicamentoValidade = Convert.ToDateTime(leitorRequisicao["MEDICAMENTO_VALIDADE"]);
             int medicamentoQtdDisponivel = Convert.ToInt32(leitorRequisicao["MEDICAMENTO_QUANTIDADEDISPONIVEL"]);
-
             int medicamentoFornecedorId = Convert.ToInt32(leitorRequisicao["MEDICAMENTO_FORNECEDOR_ID"]);
             string medicamentoFornecedorNome = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_NOME"]);
             string medicamentoFornecedorTelefone = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_TELEFONE"]);
