@@ -3,6 +3,7 @@ using ControleMedicamentos.Dominio.ModuloFornecedor;
 using ControleMedicamentos.Dominio.ModuloPaciente;
 using ControleMedicamentos.Dominio.ModuloMedicamento;
 using ControleMedicamentos.Dominio.ModuloRequisicao;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -53,7 +54,9 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
 
 
         private const string sqlExcluir =
-           @"DELETE FROM [TBMedicamento]
+           @"UPDATE FROM [TBMedicamento]
+                SET
+                    [QUANTIDADEMEDICAMENTO] = @QUANTIDADEMEDICAMENTO,
 		        WHERE
 			        [ID] = @ID";
         private const string sqlSelecionarPorNumero =
@@ -170,7 +173,7 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             SqlCommand sqlCommand = new SqlCommand(sqlExcluir, sqlConnection);
 
             sqlCommand.Parameters.AddWithValue("ID", medicamento.Numero);
-
+            sqlCommand.Parameters.AddWithValue("QUANTIDADEMEDICAMENTO", 0);
             sqlConnection.Open();
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
@@ -184,11 +187,34 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
             List<Medicamento> medicamentos = new List<Medicamento>();
+            List<Requisicao> todasRequisicoes = new List<Requisicao>();
 
+            SqlCommand sqlCommandRequisicao = new SqlCommand
+            (sqlSelecionarRequisicaoTodos, sqlConnection);
+
+            SqlDataReader sqlDataReaderRequisicao = sqlCommandRequisicao.ExecuteReader();
+
+            while (sqlDataReaderRequisicao.Read())
+                todasRequisicoes.Add(ConverterRequisicao(sqlDataReaderRequisicao));
+            todasRequisicoes.OrderBy(x => x.Paciente.Numero);
+
+            int i = 0;
             while (sqlDataReader.Read())
             {
                 Medicamento medicamento = ConverterMedicamento(sqlDataReader);
 
+                List<Requisicao> requisicoes = new List<Requisicao>();
+
+                //Requisicao requisicao = null;
+                
+                while (todasRequisicoes[i].Numero == medicamento.Numero)
+                {
+                    todasRequisicoes[i].Medicamento = medicamento;
+                    requisicoes.Add(todasRequisicoes[i]);
+                    i++;
+                }                               
+
+                medicamento.Requisicoes = requisicoes;
                 medicamentos.Add(medicamento);
             }
             return medicamentos;
@@ -215,8 +241,8 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
                 List<Requisicao> requisicoes = new List<Requisicao>();
                 while (sqlDataReaderRequisicao.Read())
                 {
-                    Requisicao requisicao = null;
-                    requisicao = ConverterRequisicao(sqlDataReaderRequisicao);
+                    //Requisicao requisicao = null;
+                    Requisicao requisicao = ConverterRequisicao(sqlDataReaderRequisicao);
                     requisicao.Medicamento = medicamento;
                     requisicoes.Add(requisicao);
                 }
@@ -234,13 +260,25 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             string lote = Convert.ToString(leitorMedicamento["LOTE"]);
             DateTime validade = Convert.ToDateTime(leitorMedicamento["VALIDADE"]);
             int quantidadeDisponivel = Convert.ToInt32(leitorMedicamento["QUANTIDADEDISPONIVEL"]);
+
             int fornecedorId = Convert.ToInt32(leitorMedicamento["FORNECEDOR_ID"]);
+            string fornecedorNome = Convert.ToString(leitorMedicamento["FORNECEDOR_NOME"]);
+            string fornecedorTelefone = Convert.ToString(leitorMedicamento["TELEFONE"]);
+            string fornecedorEmail = Convert.ToString(leitorMedicamento["EMAIL"]);
+            string fornecedorCidade = Convert.ToString(leitorMedicamento["CIDADE"]);
+            string fornecedorEstado = Convert.ToString(leitorMedicamento["ESTADO"]);
 
             var medicamento = new Medicamento
                 (nome, descricao, lote, validade)
             {
                 Numero = numero,                
-                QuantidadeDisponivel = quantidadeDisponivel
+                QuantidadeDisponivel = quantidadeDisponivel,
+                Fornecedor = new Fornecedor
+                (fornecedorNome, fornecedorTelefone, fornecedorEmail, 
+                fornecedorCidade, fornecedorEstado)
+                {
+                    Numero = fornecedorId
+                }
             };
 
             return medicamento;

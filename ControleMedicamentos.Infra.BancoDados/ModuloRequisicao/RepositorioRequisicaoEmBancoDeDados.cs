@@ -48,9 +48,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
 			        [ID] = @ID";
 
         private const string sqlExcluir =
-           @"UPDATE FROM [TBRequisicao]
-                SET
-                    [QUANTIDADEMEDICAMENTO] = @QUANTIDADEMEDICAMENTO,
+           @"DELETE FROM [TBRequisicao]                                
 		        WHERE
 			        [ID] = @ID";
         private const string sqlSelecionarPorNumero =
