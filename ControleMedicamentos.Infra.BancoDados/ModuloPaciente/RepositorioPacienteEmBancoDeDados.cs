@@ -9,7 +9,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloPaciente
     public class RepositorioPacienteEmBancoDeDados
     {
         private static readonly string databaseConnection =
-        "(localdb)\\MSSQLLocalDB;Initial Catalog=ControleMedicamentos;" +
+        "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ControleMedicamentos;" +
         "Integrated Security=True;" +
         "Pooling=False";
 
@@ -96,7 +96,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloPaciente
 
             return resultadoValidacao;
         }
-        public void Excluir(Paciente paciente)
+        public int Excluir(Paciente paciente)
         {
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlExcluir, sqlConnection);
@@ -104,8 +104,10 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloPaciente
             sqlCommand.Parameters.AddWithValue("ID", paciente.Numero);
 
             sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
+            int i = sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
+
+            return i;
         }
         public List<Paciente> SelecionarTodos()
         {
