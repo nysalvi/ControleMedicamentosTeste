@@ -43,8 +43,7 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloFuncionario
             Assert.AreEqual(func33.Equals(func22), true);
             Assert.AreEqual(func22.Equals(func33), true);
 
-            Funcionario func111 = new Funcionario(func11.Nome, func11.Login, func11.Senha);
-
+            Funcionario func111 = new Funcionario(func11.Nome, func11.Login, func11.Senha);            
             Funcionario func222 = new Funcionario(func22.Nome, func22.Login, func22.Senha);
             func111.Senha = "dasdas";
 
