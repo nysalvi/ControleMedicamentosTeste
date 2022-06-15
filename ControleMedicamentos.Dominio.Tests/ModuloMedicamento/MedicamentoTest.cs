@@ -17,9 +17,12 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloMedicamento
             Medicamento med3 = new Medicamento("Loratadina", "Para riniter alérgica", "334",
                 DateTime.Parse("12/01/2023"));
 
-            string med1String = "|Nome /Paracetamol |Descrição /Para dor de Cabeça |Lote /512 |QtdDisponivel";
-            string med2String = "|Eno /Carlos |CartaoSUS /554263";
-            string med3String = "|Loratadina /Paulo |CartaoSUS /9996305";
+            string med1String = "|Nome /Paracetamol |Descrição /Para dor de Cabeça |Lote /512 |Validade /14/07/2022 |QtdDisponivel" +
+                "/ \\Requisições / \\Fornecedor |QtdRequisições /0";
+            string med2String = "|Nome /Eno |Descrição /Para dor no Estômago |Lote /241 |Validade /22/06/2022 |QtdDisponivel" +
+                "/ \\Requisições / \\Fornecedor |QtdRequisições /0";
+            string med3String = "|Nome /Eno |Descrição /Para dor no Estômago |Lote /241 |Validade /22/06/2022 |QtdDisponivel" +
+                "/ \\Requisições / \\Fornecedor |QtdRequisições /0";
 
             Assert.AreEqual(med1.ToString(), med1String);
             Assert.AreEqual(med2.ToString(), med2String);
@@ -28,9 +31,12 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloMedicamento
         [TestMethod]
         public void ObjetoEqual()
         {
-            Medicamento med1 = new Medicamento("Roberto", "1288489");
-            Medicamento med2 = new Medicamento("Carlos", "554263");
-            Medicamento med3 = new Medicamento("Paulo", "9996305");
+            Medicamento med1 = new Medicamento("Paracetamol", "Para dor de Cabeça", "512",
+                DateTime.Parse("14/07/2022"));
+            Medicamento med2 = new Medicamento("Eno", "Para dor no Estômago", "241",
+                DateTime.Parse("22/06/2022"));
+            Medicamento med3 = new Medicamento("Loratadina", "Para riniter alérgica", "334",
+                DateTime.Parse("12/01/2023"));
 
             Medicamento med11 = med1;
             Medicamento med22 = med2;
