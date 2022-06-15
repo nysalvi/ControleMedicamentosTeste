@@ -1,5 +1,6 @@
 ﻿using ControleMedicamentos.Dominio.ModuloPaciente;
 using System;
+using FluentValidation.Results;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -55,8 +56,15 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloPaciente
               FROM 
 	                [TBPaciente]";
         #endregion
-        public void Inserir(Paciente paciente)
+        public ValidationResult Inserir(Paciente paciente)
         {
+            var validador = new ValidadorPaciente();
+
+            var resultadoValidacao = validador.Validate(paciente);
+
+            if (resultadoValidacao.IsValid == false)
+                return resultadoValidacao;
+
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlInserir, sqlConnection);
 
@@ -66,9 +74,18 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloPaciente
             var id = sqlCommand.ExecuteScalar();
             paciente.Numero = Convert.ToInt32(id);
             sqlConnection.Close();
+
+            return resultadoValidacao;
         }
-        public void Editar(Paciente paciente)
+        public ValidationResult Editar(Paciente paciente)
         {
+            var validador = new ValidadorPaciente();
+
+            var resultadoValidacao = validador.Validate(paciente);
+
+            if (resultadoValidacao.IsValid == false)
+                return resultadoValidacao;
+
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlEditar, sqlConnection);
 
@@ -77,6 +94,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloPaciente
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
 
+            return resultadoValidacao;
         }
         public void Excluir(Paciente paciente)
         {

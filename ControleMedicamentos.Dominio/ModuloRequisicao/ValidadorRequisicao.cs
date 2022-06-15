@@ -25,7 +25,6 @@ namespace ControleMedicamentos.Dominio.ModuloRequisicao
 
             RuleFor(x => x.Data)
                 .GreaterThan(System.DateTime.MinValue).WithMessage("'Data' incorreto");
-
         }
     }
 }

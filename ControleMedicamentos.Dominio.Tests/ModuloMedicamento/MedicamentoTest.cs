@@ -48,9 +48,9 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloMedicamento
             Assert.AreEqual(med33.Equals(med22), true);
             Assert.AreEqual(med22.Equals(med33), true);
 
-            Medicamento med111 = new Medicamento(med11.Nome, med11.CartaoSUS);
-            Medicamento med222 = new Medicamento(med22.Nome, med22.CartaoSUS);
-            med111.CartaoSUS = "44236651";
+            Medicamento med111 = new Medicamento(med11.Nome, med11.Descricao, med11.Lote, med11.Validade);
+            Medicamento med222 = new Medicamento(med22.Nome, med22.Descricao, med22.Lote, med22.Validade);
+            med111.Lote = "44236651";
 
             Assert.AreEqual(med111.Equals(med11), false);
             Assert.AreEqual(med222.Equals(med22), true);

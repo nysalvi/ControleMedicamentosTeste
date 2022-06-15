@@ -1,4 +1,5 @@
 ﻿using ControleMedicamentos.Dominio.ModuloFornecedor;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -70,8 +71,15 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFornecedor
 	                [TBFornecedor]";
         #endregion
 
-        public void Inserir(Fornecedor fornecedor)
+        public ValidationResult Inserir(Fornecedor fornecedor)
         {
+            var validador = new ValidadorFornecedor();
+            
+            var resultadoValidacao = validador.Validate(fornecedor);
+
+            if (resultadoValidacao.IsValid == false)
+                return resultadoValidacao;
+
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlInserir, sqlConnection);
 
@@ -81,6 +89,8 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFornecedor
             var id = sqlCommand.ExecuteScalar();
             fornecedor.Numero = Convert.ToInt32(id);
             sqlConnection.Close();
+
+            return resultadoValidacao;
         }
         public void Editar(Fornecedor fornecedor)
         {

@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.Dominio.ModuloFornecedor
 {
-    public class ValidationFornecedor
-    {
         public class ValidadorFornecedor : AbstractValidator<Fornecedor>
         {
             public ValidadorFornecedor()
@@ -32,6 +30,5 @@ namespace ControleMedicamentos.Dominio.ModuloFornecedor
                    .NotNull().WithMessage("Campo 'Estado' Não pode ser nulo")
                     .NotEmpty().WithMessage("Campo 'Estado' Não pode ser vazio");
             }
-        }
-    }
+        }    
 }

@@ -27,7 +27,7 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloPaciente
             Assert.AreEqual(pac3.ToString(), pac3String);
         }
         [TestMethod]
-        public void ObjetoEqual()
+        public void ObjetoEqual(Paciente d, string c)
         {
             Paciente pac1 = new Paciente("Roberto", "1288489");
             Paciente pac2 = new Paciente("Carlos", "554263");
@@ -50,6 +50,5 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloPaciente
             Assert.AreEqual(pac111.Equals(pac11), false);
             Assert.AreEqual(pac222.Equals(pac22), true);
         }
-
     }
 }
