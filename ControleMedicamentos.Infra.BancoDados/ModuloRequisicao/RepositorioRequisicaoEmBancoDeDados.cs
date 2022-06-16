@@ -82,6 +82,35 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
     
               WHERE 
 	                [ID] = @ID";
+            private const string sqlSelecionarMedNumero =
+            @"SELECT
+	                [ID],
+                    [NOME],
+                    [TELEFONE],
+                    [EMAIL],
+                    [CIDADE],
+                    [ESTADO],
+
+                    [P.ID] AS PACIENTE_ID
+                    [P.NOME] AS PACIENTE_NOME,
+                    [P.CARTAOSUS] AS P_CARTAOSUS,
+                    
+                    [F.ID] AS FUNCIONARIO_ID
+                    [F.NOME] AS FUNCIONARIO_NOME,
+                    [F.LOGIN] AS FUNCIONARIO_LOGIN,
+                    [F.SENHA] AS FUNCIONARIO_SENHA,
+                                        
+              FROM 
+	                TBRequisicao AS R INNER JOIN
+                    TBPaciente AS P ON 
+                    R.[PACIENTE_ID] = P.[ID] INNER JOIN
+                    TBFuncionario AS F ON R.[FUNCIONARIO_ID] = F.[ID]
+                    INNER JOIN TBMedicamento AS M ON
+                    R.[ID] = M.[ID]
+    
+              WHERE 
+	                [MEDICAMENTO_ID] = @ID";
+
 
         private const string sqlSelecionarTodos =
           @"SELECT
@@ -233,16 +262,35 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                 Numero = medicamentoFornecedorId
             };
 
-            List<Requisicao> requisicoes = new List<Requisicao>();
-
             Medicamento medicamento = new Medicamento
                 (medicamentoNome, medicamentoDescricao, medicamentoLote, medicamentoValidade)
             {
                 Numero = medicamentoId,
                 QuantidadeDisponivel = medicamentoQtdDisponivel,
                 Fornecedor = fornecedor,
-                Requisicoes = requisicoes
             };
+            SqlConnection sqlConnection = new SqlConnection(databaseConnection);
+            SqlCommand sqlCommand = new SqlCommand(sqlSelecionarMedNumero, sqlConnection);
+
+            sqlCommand.Parameters.AddWithValue("ID", medicamento.Numero);
+
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+            List<Requisicao> requisicoes = new List<Requisicao>();
+
+            Requisicao req;
+            while (sqlDataReader.Read())
+            {
+                req = ConverterRequisicaoSemMedicamento(sqlDataReader);
+                req.Medicamento = medicamento;
+                requisicoes.Add(req);
+            }
+
+            sqlConnection.Close();
+
+            sqlConnection.Open();
+            sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
 
             int qntMedicamento = Convert.ToInt32(leitorRequisicao["QUANTIDADEMEDICAMENTO"]);
             DateTime data = Convert.ToDateTime(leitorRequisicao["DATA"]);
@@ -251,6 +299,43 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
             {
                 Numero = numero,
                 Medicamento = medicamento,
+                Paciente = paciente,
+                QtdMedicamento = qntMedicamento,
+                Data = data,
+                Funcionario = funcionario
+            };
+
+            return requisicao;
+        }
+        public static Requisicao ConverterRequisicaoSemMedicamento(SqlDataReader sqlReader)
+        {
+            int numero = Convert.ToInt32(sqlReader["ID"]);
+
+            int funcionarioId = Convert.ToInt32(sqlReader["FUNCIONARIO_ID"]);
+            string funcionarioNome = Convert.ToString(sqlReader["FUNCIONARIO_NOME"]);
+            string funcionarioLogin = Convert.ToString(sqlReader["FUNCIONARIO_LOGIN"]);
+            string funcionarioSenha = Convert.ToString(sqlReader["FUNCIONARIO_SENHA"]);
+
+            Funcionario funcionario = new Funcionario
+                (funcionarioNome, funcionarioLogin, funcionarioSenha)
+            {
+                Numero = funcionarioId
+            };
+
+            int pacienteId = Convert.ToInt32(sqlReader["PACIENTE_ID"]);
+            string pacienteNome = Convert.ToString(sqlReader["PACIENTE_NOME"]);
+            string pacienteCARTAOSUS = Convert.ToString(sqlReader["PACIENTE_CARTAOSUS"]);
+
+            Paciente paciente = new Paciente(pacienteNome, pacienteCARTAOSUS)
+            {
+                Numero = pacienteId
+            };
+            int qntMedicamento = Convert.ToInt32(sqlReader["QUANTIDADEMEDICAMENTO"]);
+            DateTime data = Convert.ToDateTime(sqlReader["DATA"]);
+
+            var requisicao = new Requisicao
+            {
+                Numero = numero,
                 Paciente = paciente,
                 QtdMedicamento = qntMedicamento,
                 Data = data,
