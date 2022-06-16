@@ -66,12 +66,14 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [F.NOME] AS FUNCIONARIO_NOME,
                     [F.LOGIN] AS FUNCIONARIO_LOGIN,
                     [F.SENHA] AS FUNCIONARIO_SENHA,
-
+                    
+                    [M.ID] AS MEDICAMENTO_ID,
                     [M.NOME] AS MEDICAMENTO_NOME,
                     [M.DESCRICAO] AS MEDICAMENTO_DESCRICAO,
                     [M.LOTE] AS MEDICAMENTO_LOTE,
                     [M.VALIDADE] AS MEDICAMENTO_VALIDADE,
-                                        
+                    [M.QUANTIDADEDISPONIVEL] AS MEDICAMENTO_QUANTIDADEDISPONIVEL,
+
               FROM 
 	                TBRequisicao AS R INNER JOIN
                     TBPaciente AS P ON 
@@ -82,7 +84,22 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
     
               WHERE 
 	                [ID] = @ID";
-            private const string sqlSelecionarMedNumero =
+
+        private const string sqlSelecionarFornecedor =
+            @"SELECT
+	                [ID] AS FORNECEDOR_ID,
+                    [NOME] AS FORNECEDOR_NOME,
+                    [TELEFONE] AS FORNECEDOR_TELEFONE,
+                    [EMAIL] AS FORNECEDOR_EMAIL,
+                    [CIDADE] AS FORNECEDOR_CIDADE,
+                    [ESTADO] AS FORNECEDOR_ESTADO,
+                                        
+              FROM 
+	                TBFornecedor AS R INNER JOIN
+              WHERE 
+	                [ID] = @ID";
+
+        private const string sqlSelecionarRequisicaoPorMedNumero =
             @"SELECT
 	                [ID],
                     [NOME],
@@ -129,10 +146,10 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                     [F.SENHA] AS FUNCIONARIO_SENHA,
                     
                     [M.ID] AS MEDICAMENTO_ID,
-                    [M.NOME] AS MEDICAMENTO.NOME,
-                    [M.DESCRICAO] AS MEDICAMENTO.DESCRICAO,
-                    [M.LOTE] AS MEDICAMENTO.LOTE,
-                    [M.VALIDADE] AS MEDICAMENTO.VALIDADE,
+                    [M.NOME] AS MEDICAMENTO_NOME,
+                    [M.DESCRICAO] AS MEDICAMENTO_DESCRICAO,
+                    [M.LOTE] AS MEDICAMENTO_LOTE,
+                    [M.VALIDADE] AS MEDICAMENTO_VALIDADE,
 
               FROM 
 	                TBRequisicao AS R INNER JOIN
@@ -241,18 +258,27 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                 Numero = pacienteId
             };
 
+            SqlConnection sqlConnection = new SqlConnection(databaseConnection);
+
+            SqlCommand sqlCommandFornecedor = new SqlCommand(sqlSelecionarFornecedor, sqlConnection);
+            sqlConnection.Open();
+
+            sqlCommandFornecedor.Parameters.AddWithValue("ID", numero);
+
+            SqlDataReader sqlDataReaderFornecedor = sqlCommandFornecedor.ExecuteReader();
+
             int medicamentoId = Convert.ToInt32(leitorRequisicao["MEDICAMENTO_ID"]);
             string medicamentoNome = Convert.ToString(leitorRequisicao["MEDICAMENTO_NOME"]);
             string medicamentoDescricao = Convert.ToString(leitorRequisicao["MEDICAMENTO_DESCRICAO"]);
             string medicamentoLote = Convert.ToString(leitorRequisicao["MEDICAMENTO_LOTE"]);
             DateTime medicamentoValidade = Convert.ToDateTime(leitorRequisicao["MEDICAMENTO_VALIDADE"]);
             int medicamentoQtdDisponivel = Convert.ToInt32(leitorRequisicao["MEDICAMENTO_QUANTIDADEDISPONIVEL"]);
-            int medicamentoFornecedorId = Convert.ToInt32(leitorRequisicao["MEDICAMENTO_FORNECEDOR_ID"]);
-            string medicamentoFornecedorNome = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_NOME"]);
-            string medicamentoFornecedorTelefone = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_TELEFONE"]);
-            string medicamentoFornecedorEmail = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_EMAIL"]);
-            string medicamentoFornecedorCidade = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_CIDADE"]);
-            string medicamentoFornecedorEstado = Convert.ToString(leitorRequisicao["MEDICAMENTO_FORNECEDOR_ESTADO"]);
+            int medicamentoFornecedorId = Convert.ToInt32(sqlDataReaderFornecedor["FORNECEDOR_ID"]);
+            string medicamentoFornecedorNome = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_NOME"]);
+            string medicamentoFornecedorTelefone = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_TELEFONE"]);
+            string medicamentoFornecedorEmail = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_EMAIL"]);
+            string medicamentoFornecedorCidade = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_CIDADE"]);
+            string medicamentoFornecedorEstado = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_ESTADO"]);
 
             Fornecedor fornecedor = new Fornecedor
                 (medicamentoFornecedorNome, medicamentoFornecedorTelefone,
@@ -269,8 +295,8 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                 QuantidadeDisponivel = medicamentoQtdDisponivel,
                 Fornecedor = fornecedor,
             };
-            SqlConnection sqlConnection = new SqlConnection(databaseConnection);
-            SqlCommand sqlCommand = new SqlCommand(sqlSelecionarMedNumero, sqlConnection);
+
+            SqlCommand sqlCommand = new SqlCommand(sqlSelecionarRequisicaoPorMedNumero, sqlConnection);
 
             sqlCommand.Parameters.AddWithValue("ID", medicamento.Numero);
 
@@ -285,11 +311,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
                 req.Medicamento = medicamento;
                 requisicoes.Add(req);
             }
-
-            sqlConnection.Close();
-
-            sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
+            
             sqlConnection.Close();
 
             int qntMedicamento = Convert.ToInt32(leitorRequisicao["QUANTIDADEMEDICAMENTO"]);
