@@ -274,6 +274,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
             DateTime medicamentoValidade = Convert.ToDateTime(leitorRequisicao["MEDICAMENTO_VALIDADE"]);
             int medicamentoQtdDisponivel = Convert.ToInt32(leitorRequisicao["MEDICAMENTO_QUANTIDADEDISPONIVEL"]);
             int medicamentoFornecedorId = Convert.ToInt32(sqlDataReaderFornecedor["FORNECEDOR_ID"]);
+
             string medicamentoFornecedorNome = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_NOME"]);
             string medicamentoFornecedorTelefone = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_TELEFONE"]);
             string medicamentoFornecedorEmail = Convert.ToString(sqlDataReaderFornecedor["FORNECEDOR_EMAIL"]);
@@ -304,10 +305,9 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloRequisicao
 
             List<Requisicao> requisicoes = new List<Requisicao>();
 
-            Requisicao req;
             while (sqlDataReader.Read())
             {
-                req = ConverterRequisicaoSemMedicamento(sqlDataReader);
+                Requisicao req = ConverterRequisicaoSemMedicamento(sqlDataReader);
                 req.Medicamento = medicamento;
                 requisicoes.Add(req);
             }
