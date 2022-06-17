@@ -32,8 +32,6 @@ namespace ControleMedicamentos.Dominio.ModuloMedicamento
             RuleFor(x => x.Fornecedor)
                 //.Cascade(val.Validate())
                 .NotNull().WithMessage("Campo 'Fornecedor' não pode ser nulo");
-                            
-
             RuleFor(x => x.QuantidadeDisponivel)            
                 .GreaterThanOrEqualTo(0).WithMessage
                     ("Campo 'QuantidadeDisponivel' não pode ser negativo");

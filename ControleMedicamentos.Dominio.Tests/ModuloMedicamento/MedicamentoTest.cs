@@ -3,6 +3,7 @@ using ControleMedicamentos.Dominio.ModuloMedicamento;
 using System;
 using FluentValidation.Results;
 using ControleMedicamento.Dominio.Compartilhado;
+using ControleMedicamentos.Dominio.ModuloFornecedor;
 
 namespace ControleMedicamentos.Dominio.Tests.ModuloMedicamento
 {
@@ -126,74 +127,50 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloMedicamento
         }
         [TestMethod]
         public void Fornecedor()
-        {            
-            Medicamento med1 = new Medicamento("Paracetamol", "Para dor de Cabeça", "512",
+        {
+            Medicamento med1 = new Medicamento("Paracetamol", "Para dor de Cabeça", "213",
                 DateTime.Parse("14/07/2022"));
-            Medicamento med2 = new Medicamento("Eno", "Para dor no Estômago", "241",
+            med1.QuantidadeDisponivel = -1;
+            Medicamento med2 = new Medicamento("Eno", "Para dor no Estômago", "5546",
                 DateTime.Parse("22/06/2022"));
-            Medicamento med3 = new Medicamento("Loratadina", "Para riniter alérgica", "334",
-                DateTime.Parse("12/01/2023"));
+            Medicamento med3 = new Medicamento("Eno", "Para dor no Estômago", "514126",
+                DateTime.Parse("14/08/2022"));
+
+            Fornecedor for1 = new Fornecedor
+            ("Roberto", "(49) 9 9758 - 4475", "rbo21@gmail.com", "Lages", "SC");
+
+            Fornecedor for2 = new Fornecedor("", "(51) 9 8847 - 5514",
+                "carloc@yahoo.com", "Porto Alegre", "RS");
+            Fornecedor for3 = new Fornecedor("Paulo", "54 9 8547 - 1125",
+                "paul.cs@hotmail.com", "Lages", "SC");
+
+            med2.Fornecedor = for1;
+            med3.Fornecedor = for2;
 
             ValidationResult result = validador.Validate(med1);
             ValidationResult result2 = validador.Validate(med2);
+
             ValidationResult result3 = validador.Validate(med3);
 
-            //FluentValidationExtension.Equals();
+            string[] errors = new string[]
+            {
+               "Campo 'Fornecedor' não pode ser nulo",
+               "Campo 'QuantidadeDisponivel' não pode ser negativo"
+               
+            };
 
-            Assert.AreEqual(result.Errors[0].ErrorMessage, "Campo 'Validade' não pode ser vazio");
-            Assert.AreEqual(result2.Errors[0].ErrorMessage, "Campo 'Validade' não pode ser vazio");
-            Assert.AreEqual(result3.Errors[0].ErrorMessage, "Campo 'Validade' não pode ser vazio");
+            string[] errors1 = new string[]
+            {
 
+            };
+            string[] errors2 = new string[]
+            {
+               "Campo 'Lote' não pode ser nulo", "Campo 'Lote' não pode ser vazio",
+               "Campo 'Fornecedor' não pode ser nulo"
+            };
+
+            Assert.AreEqual(FluentValidationExtension.Equals(result, errors), true);
+            Assert.AreEqual(FluentValidationExtension.Equals(result2, errors1), true);
         }
-
-        [TestMethod]
-        public void ToSTRING()
-        {
-            Medicamento med1 = new Medicamento("Paracetamol", "Para dor de Cabeça", "512", 
-                DateTime.Parse("14/07/2022"));
-            Medicamento med2 = new Medicamento("Eno", "Para dor no Estômago", "241", 
-                DateTime.Parse("22/06/2022"));
-            Medicamento med3 = new Medicamento("Loratadina", "Para riniter alérgica", "334",
-                DateTime.Parse("12/01/2023"));
-
-            string med1String = "|Nome /Paracetamol |Descrição /Para dor de Cabeça |Lote /512 |Validade /14/07/2022 |QtdDisponivel" +
-                "/ \\Requisições / \\Fornecedor |QtdRequisições /0";
-            string med2String = "|Nome /Eno |Descrição /Para dor no Estômago |Lote /241 |Validade /22/06/2022 |QtdDisponivel" +
-                "/ \\Requisições / \\Fornecedor |QtdRequisições /0";
-            string med3String = "|Nome /Eno |Descrição /Para dor no Estômago |Lote /241 |Validade /22/06/2022 |QtdDisponivel" +
-                "/ \\Requisições / \\Fornecedor |QtdRequisições /0";
-
-            Assert.AreEqual(med1.ToString(), med1String);
-            Assert.AreEqual(med2.ToString(), med2String);
-            Assert.AreEqual(med3.ToString(), med3String);
-        }
-        [TestMethod]
-        public void ObjetoEqual()
-        {
-            Medicamento med1 = new Medicamento("Paracetamol", "Para dor de Cabeça", "512",
-                DateTime.Parse("14/07/2022"));
-            Medicamento med2 = new Medicamento("Eno", "Para dor no Estômago", "241",
-                DateTime.Parse("22/06/2022"));
-            Medicamento med3 = new Medicamento("Loratadina", "Para riniter alérgica", "334",
-                DateTime.Parse("12/01/2023"));
-
-            Medicamento med11 = med1;
-            Medicamento med22 = med2;
-            Medicamento med33 = med2;
-
-            Assert.AreEqual(med1.Equals(med22), false);
-            Assert.AreEqual(med1.Equals(null), false);
-            Assert.AreEqual(med22.Equals(med1), false);
-            Assert.AreEqual(med33.Equals(med22), true);
-            Assert.AreEqual(med22.Equals(med33), true);
-
-            Medicamento med111 = new Medicamento(med11.Nome, med11.Descricao, med11.Lote, med11.Validade);
-            Medicamento med222 = new Medicamento(med22.Nome, med22.Descricao, med22.Lote, med22.Validade);
-            med111.Lote = "44236651";
-
-            Assert.AreEqual(med111.Equals(med11), false);
-            Assert.AreEqual(med222.Equals(med22), true);
-        }
-
     }
 }
