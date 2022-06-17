@@ -4,9 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ControleMedicamento.Dominio.Compartilhado;
+using ControleMedicamento.Infra.BancoDados.Compartilhado;
 
 namespace ControleMedicamentos.Infra.BancoDados.Tests.ModuloPaciente
 {
@@ -14,93 +13,146 @@ namespace ControleMedicamentos.Infra.BancoDados.Tests.ModuloPaciente
     public class RepositorioPacienteEmBancoDadosTest
     {
         RepositorioPacienteEmBancoDeDados repo = new RepositorioPacienteEmBancoDeDados();
+
         ValidadorPaciente val = new ValidadorPaciente();
 
+        Paciente pac1;
+        Paciente pac2;
+        Paciente pac3;
+        Paciente pac4;
+        Paciente pac5;
+
+        public RepositorioPacienteEmBancoDadosTest()
+        {
+            db.ComandoSql("DELETE FROM TBPaciente; DBCC CHECKIDENT (TBPaciente, RESEED, 0)");
+
+            pac1 = new Paciente(default,"SC");
+            pac2 = new Paciente("Carlos", null);
+            pac3 = new Paciente("Paulo", "221415");
+            pac4 = new Paciente("Roberto", "22131");
+            pac5 = new Paciente("João", "3345");
+
+        }
         [TestMethod]
         public void Inserir()
         {
-            RepositorioPacienteEmBancoDeDados repo = new RepositorioPacienteEmBancoDeDados();
-
-            Paciente pac1 = new Paciente(default, "34141");
-            Paciente pac2 = new Paciente("Carlos", null);
-            Paciente pac3 = new Paciente("Paulo", "");
-
             ValidationResult val1 = val.Validate(pac1);
             ValidationResult val2 = val.Validate(pac2);
             ValidationResult val3 = val.Validate(pac3);
+            ValidationResult val4 = val.Validate(pac4);
+            ValidationResult val5 = val.Validate(pac5);
 
-            //Assert.AreEqual(repo.Inserir(pac1), val1);
-            //Assert.AreEqual(repo.Inserir(pac2), val2);
-            //Assert.AreEqual(repo.Inserir(pac3), val3);
+            ValidationResult val11 = repo.Inserir(pac1);
+            ValidationResult val22 = repo.Inserir(pac2);
+            ValidationResult val33 = repo.Inserir(pac3);
+            ValidationResult val44 = repo.Inserir(pac4);
+            ValidationResult val55 = repo.Inserir(pac5);
 
-            Assert.AreEqual(repo.Inserir(pac1).IsValid, val1.IsValid);
-            Assert.AreEqual(repo.Inserir(pac2).IsValid, val2.IsValid);
-            Assert.AreEqual(repo.Inserir(pac3).IsValid, val3.IsValid);
 
+            Assert.AreEqual(FluentValidationExtension.Equals(val1, val11), true);
+            Assert.AreEqual(FluentValidationExtension.Equals(val2, val22), true);
+            Assert.AreEqual(FluentValidationExtension.Equals(val3, val33), true);
+            Assert.AreEqual(FluentValidationExtension.Equals(val4, val44), true);
+            Assert.AreEqual(FluentValidationExtension.Equals(val5, val55), true);
+
+            Paciente paciente1 = repo.SelecionarPorNumero(pac1.Numero);
+            Paciente paciente2 = repo.SelecionarPorNumero(pac2.Numero);
+            Paciente paciente3 = repo.SelecionarPorNumero(pac3.Numero);
+            Paciente paciente4 = repo.SelecionarPorNumero(pac4.Numero);
+            Paciente paciente5 = repo.SelecionarPorNumero(pac5.Numero);
+
+            Assert.AreEqual(Paciente.Equals(paciente1, pac1), false);
+            Assert.AreEqual(Paciente.Equals(paciente2, pac2), false);
+            Assert.AreEqual(Paciente.Equals(paciente3, pac3), true);
+            Assert.AreEqual(Paciente.Equals(paciente4, pac4), true);
+            Assert.AreEqual(Paciente.Equals(paciente5, pac5), true);
         }
         [TestMethod]
         public void Editar()
         {
-            Paciente paciente = new Paciente("Roberto", "221")
+            repo.Inserir(pac3);
+            repo.Inserir(pac4);
+            repo.Inserir(pac5);
+
+            Paciente pac55 = new Paciente("João", "425")
             {
-                Numero = 1
+                Numero = pac5.Numero
             };
 
-            repo.Editar(paciente);
+            repo.Editar(pac55);
+            Paciente paciente55 = repo.SelecionarPorNumero(pac55.Numero);
 
-            Paciente pac = repo.SelecionarPorNumero(1);
+            Assert.AreEqual(Paciente.Equals(pac55, paciente55), true);
 
-            Assert.AreEqual(paciente.ToString(), pac.ToString());
+            Paciente pac555 = new Paciente("João", null)
+            {
+                Numero = pac5.Numero
+            };            
+            repo.Editar(pac555);
+            Paciente paciente555 = repo.SelecionarPorNumero(pac555.Numero);
 
+            Assert.AreEqual(Paciente.Equals(pac555, paciente555), false);
         }
         [TestMethod]
-        public void Exluir()
+        public void Excluir()
         {
-            Paciente paciente = new Paciente("Roberto", "3443")
+            repo.Inserir(pac3);
+            repo.Inserir(pac4);
+            repo.Inserir(pac5);
+
+            int quantidadeExcluidos = repo.Excluir(pac5);
+
+            Assert.AreEqual(quantidadeExcluidos, 1);
+
+            List<Paciente> pacientes = repo.SelecionarTodos();
+
+            List<Paciente> _pacientes = new List<Paciente>()
             {
-                Numero = 1
+                pac3, pac4
             };
 
-            repo.Inserir(paciente);
+            Assert.AreEqual(_pacientes.Count, pacientes.Count);
 
-            Assert.AreEqual(repo.Excluir(paciente), 1);
+            for (int i = 0; i < pacientes.Count; i++)
+            {
+                Assert.AreEqual(pacientes[i].Equals(_pacientes[i]), true);
+            }
         }
         [TestMethod]
         public void SelecionarTodos()
         {
-            List<Paciente> pac = new List<Paciente>()
-            {
-                new Paciente("Carlos", "21313")
-                {
-                    Numero = 4
-                },
-                new Paciente("Jefferson", "1120")
-                {
-                    Numero = 5
-                },
-                new Paciente("nome", "cartao")
-                {
-                    Numero = 6
-                }
-            };
-            List<Paciente> pacientes = repo.SelecionarTodos();
+            repo.Inserir(pac3);
+            repo.Inserir(pac4);
+            repo.Inserir(pac5);
 
-            for (int i = 0; i < pacientes.Count; i++)
+            List<Paciente> pacientes = new List<Paciente>()
             {
-                Assert.AreEqual(pac[i].ToString(), pacientes[i].ToString());
+                pac3, pac4, pac5
+            };
+            List<Paciente> _pacientes = repo.SelecionarTodos();
+
+            for (int i = 0; i < _pacientes.Count; i++)
+            {
+                Assert.AreEqual(pacientes[i].Equals(_pacientes[i]), true);
             }
-            
-            //Assert.AreEqual(pac, pacientes);
-            //Assert.AreEqual(pac.Equals(pacientes), true);
+
         }
         [TestMethod]
         public void SelecionarPorNumero()
         {
-            Paciente pac = new Paciente("nome", "cartao");
-            pac.Numero = 6;
-            //repo.Inserir(pac);
-            Paciente paciente = repo.SelecionarPorNumero(pac.Numero);
-            Assert.AreEqual(pac, paciente);
+            repo.Inserir(pac3);
+            repo.Inserir(pac4);
+            repo.Inserir(pac5);
+            
+            Paciente paciente3 = repo.SelecionarPorNumero(pac3.Numero);
+            Assert.AreEqual(pac3.Equals(paciente3), true);
+
+            Paciente paciente4 = repo.SelecionarPorNumero(pac4.Numero);
+            Assert.AreEqual(pac4.Equals(paciente4), true);
+
+            Paciente paciente5 = repo.SelecionarPorNumero(pac5.Numero);
+            Assert.AreEqual(pac5.Equals(paciente5), true);
+
         }
     }
 }

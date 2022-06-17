@@ -226,6 +226,7 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             sqlConnection.Open();
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
+            
             Medicamento medicamento = null;
 
             if (sqlDataReader.Read())
@@ -296,7 +297,7 @@ namespace ControleMedicamento.Infra.BancoDados.ModuloMedicamento
             
             DateTime data = Convert.ToDateTime(leitorRequisicao["DATA"]);
             int quantidadeMedicamento = Convert.ToInt32
-                                            (leitorRequisicao["QUANTIDADEMEDICAMENTO"]);
+                (leitorRequisicao["QUANTIDADEMEDICAMENTO"]);
             var requisicao = new Requisicao
             {
                 Numero = numero,

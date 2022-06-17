@@ -8,5 +8,6 @@ namespace ControleMedicamentos.Dominio.Tests.ModuloRequisicao
 {
     public class RequisicaoTest
     {
+
     }
 }

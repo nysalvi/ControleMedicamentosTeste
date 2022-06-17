@@ -9,8 +9,8 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFornecedor
     public class RepositorioFornecedorEmBancoDeDados
     {
         private static readonly string databaseConnection =
-            "(localdb)\\MSSQLLocalDB;Initial Catalog=ControleMedicamentos;" +
-            "Integrated Security=True;" +
+            "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog=ControleMedicamentos;" +
+            "Integrated Security=True;Connect Timeout=5;" +
             "Pooling=False";
         #region SQL Queries
         private const string sqlInserir =
@@ -91,9 +91,16 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFornecedor
             sqlConnection.Close();
 
             return resultadoValidacao;
-        }
-        public void Editar(Fornecedor fornecedor)
+            }
+        public ValidationResult Editar(Fornecedor fornecedor)
         {
+            var validador = new ValidadorFornecedor();
+
+            var resultadoValidacao = validador.Validate(fornecedor);
+
+            if (resultadoValidacao.IsValid == false)
+                return resultadoValidacao;
+
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlEditar, sqlConnection);
 
@@ -102,8 +109,9 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFornecedor
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
 
+            return resultadoValidacao;
         }
-        public void Excluir(Fornecedor fornecedor)
+        public int Excluir(Fornecedor fornecedor)
         {
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlExcluir, sqlConnection);
@@ -111,8 +119,10 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFornecedor
             sqlCommand.Parameters.AddWithValue("ID", fornecedor.Numero);
 
             sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
+            int i = sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
+
+            return i;
         }
         public List<Fornecedor> SelecionarTodos()
         {

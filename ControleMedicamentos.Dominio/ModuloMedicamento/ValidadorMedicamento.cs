@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentValidation;
+using ControleMedicamentos.Dominio.ModuloFornecedor;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace ControleMedicamentos.Dominio.ModuloMedicamento
 {
     public class ValidadorMedicamento : AbstractValidator<Medicamento>
     {
+        ValidadorFornecedor val;
         public ValidadorMedicamento()
         {
             RuleFor(x => x.Nome)
@@ -28,7 +30,13 @@ namespace ControleMedicamentos.Dominio.ModuloMedicamento
                 .NotEmpty().WithMessage("Campo 'Validade' não pode ser vazio");
 
             RuleFor(x => x.Fornecedor)
+                //.Cascade(val.Validate())
                 .NotNull().WithMessage("Campo 'Fornecedor' não pode ser nulo");
+                            
+
+            RuleFor(x => x.QuantidadeDisponivel)            
+                .GreaterThanOrEqualTo(0).WithMessage
+                    ("Campo 'QuantidadeDisponivel' não pode ser negativo");
         }
     }
 }

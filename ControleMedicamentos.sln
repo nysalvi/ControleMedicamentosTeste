@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Infra", "2 - Infra", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Testes", "3 - Testes", "{65427580-4628-4172-8EC1-0922514F3AAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControleMedicamentos.Dominio", "ControleMedicamentos.Dominio\ControleMedicamentos.Dominio.csproj", "{0AB8A4CB-D9CD-4C2B-A112-240C50662BBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControleMedicamento.Dominio", "ControleMedicamentos.Dominio\ControleMedicamento.Dominio.csproj", "{0AB8A4CB-D9CD-4C2B-A112-240C50662BBD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControleMedicamentos.Dominio.Tests", "ControleMedicamentos.Dominio.Tests\ControleMedicamentos.Dominio.Tests.csproj", "{6ABF16DD-35EB-4C92-AEAF-3A56D0F6B258}"
 EndProject
@@ -21,7 +21,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ControleMedicamentos.Projet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControleMedicamentos.Infra.BancoDados.Tests", "ControleMedicamentos.Infra.BancoDados.Tests\ControleMedicamentos.Infra.BancoDados.Tests.csproj", "{EE7ACE2D-CCC8-4921-A9E3-2A58865FFD15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControleMedicamentos.Infra.BancoDados", "ControleMedicamentos.Infra.BancoDados\ControleMedicamentos.Infra.BancoDados.csproj", "{27E25512-5C5F-42A0-AA99-D18DD2E181C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControleMedicamento.Infra.BancoDados", "ControleMedicamentos.Infra.BancoDados\ControleMedicamento.Infra.BancoDados.csproj", "{27E25512-5C5F-42A0-AA99-D18DD2E181C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,5 @@
 ﻿using ControleMedicamentos.Dominio.ModuloFuncionario;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -8,7 +9,7 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFuncionario
     public class RepositorioFuncionarioEmBancoDeDados
     {
         private static readonly string databaseConnection =
-            "(localdb)\\MSSQLLocalDB;Initial Catalog=ControleMedicamentos;" +
+            "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog=ControleMedicamentos;" +
             "Integrated Security=True;" +
             "Pooling=False";
         #region SQL Queries
@@ -61,8 +62,15 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFuncionario
 
         #endregion
 
-        public void Inserir(Funcionario funcionario)
+        public ValidationResult Inserir(Funcionario funcionario)
         {
+            var validador = new ValidadorFuncionario();
+
+            var resultadoValidacao = validador.Validate(funcionario);
+
+            if (resultadoValidacao.IsValid == false)
+                return resultadoValidacao;
+
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlInserir, sqlConnection);
 
@@ -72,9 +80,18 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFuncionario
             var id = sqlCommand.ExecuteScalar();
             funcionario.Numero = Convert.ToInt32(id);
             sqlConnection.Close();
+
+            return resultadoValidacao;
         }
-        public void Editar(Funcionario funcionario)
+        public ValidationResult Editar(Funcionario funcionario)
         {
+            var validador = new ValidadorFuncionario();
+
+            var resultadoValidacao = validador.Validate(funcionario);
+
+            if (resultadoValidacao.IsValid == false)
+                return resultadoValidacao;
+
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlEditar, sqlConnection);
 
@@ -83,8 +100,9 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFuncionario
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
 
+            return resultadoValidacao;
         }
-        public void Excluir(Funcionario funcionario)
+        public int Excluir(Funcionario funcionario)
         {
             SqlConnection sqlConnection = new SqlConnection(databaseConnection);
             SqlCommand sqlCommand = new SqlCommand(sqlExcluir, sqlConnection);
@@ -92,8 +110,10 @@ namespace ControleMedicamentos.Infra.BancoDados.ModuloFuncionario
             sqlCommand.Parameters.AddWithValue("ID", funcionario.Numero);
 
             sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
+            int i = sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
+
+            return i;
         }
         public List<Funcionario> SelecionarTodos()
         {

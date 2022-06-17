@@ -12,9 +12,9 @@
         public string CartaoSUS { get; set; }
         public override bool Equals(object obj)
         {
-            Paciente obj2 = obj as Paciente;
-            if (obj2 == null)
+            if (obj == null)
                 return false;
+            Paciente obj2 = obj as Paciente;
             if (this.ToString() != obj2.ToString())
                 return false;
             return true;

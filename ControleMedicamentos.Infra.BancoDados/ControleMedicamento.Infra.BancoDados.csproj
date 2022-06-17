@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ControleMedicamentos.Dominio\ControleMedicamentos.Dominio.csproj" />
+    <ProjectReference Include="..\ControleMedicamentos.Dominio\ControleMedicamento.Dominio.csproj" />
   </ItemGroup>
 
 </Project>
